@@ -1,0 +1,92 @@
+SELECT *
+FROM Car c 
+
+SELECT c.Brand, c.Model , c.Color, c.Mileage, c.`Condition`, cdy.`Year` 
+FROM Car c
+inner join Car_Data_year cdy 
+on c.id = cdy.ID ;
+
+
+SELECT count(`Condition`), `Condition` 
+FROM Car c 
+group by 2;
+
+SELECT count(Brand), Brand 
+FROM Car c 
+group by 2
+order by 1 desc;
+
+
+
+
+SELECT c.brand, c.Model, c.color, cd.Price 
+FROM Car c 
+INNER JOIN `Car_Data_price.csv` cd ON c.id = cd.id
+WHERE cd.Price  IN (
+    SELECT AVG(price) AS avg_price
+    FROM `Car_Data_price.csv` 
+    GROUP BY price
+    HAVING cd.Price < avg_price
+);
+
+
+
+select * 
+from Car c 
+order by id desc;
+
+
+
+select * from Car c  where ID  = (select min(id) from Car c2);
+select * from Car c  where ID  = (select max(id) from Car c2);
+
+
+SELECT c.brand, MAX( cd.Price) 
+FROM Car c 
+INNER JOIN `Car_Data_price.csv` cd ON c.id = cd.id
+group by 1;
+
+SELECT c.Brand, c.Model , c.Color, c.Mileage, c.`Condition`, cdy.`Year`, if ( cdy.`Year`  >2008, 'young', 'old') as 'age'
+FROM Car c
+inner join Car_Data_year cdy 
+on c.id = cdy.ID
+having age like '%old%';
+
+
+SELECT distinct Brand, CHAR_LENGTH(Brand) as 'number'
+FROM Car
+having CHAR_LENGTH(Brand)< 5;
+
+
+
+
+SELECT c.Brand, c.Model, c.Color, c.Mileage, c.`Condition`, cdy.`Year`,
+       (c.mileage - LAG(c.mileage, 1, 0) OVER (ORDER BY brand)) AS Difference
+FROM Car c
+INNER JOIN Car_Data_year cdy ON c.id = cdy.ID
+where color like '%e%';
+
+
+SELECT brand, Model
+FROM (
+    SELECT *,
+           RANK() OVER (PARTITION BY brand ORDER BY model DESC) AS model_rank
+    FROM Car
+) AS ranked_cars;
+
+
+SELECT employee_id, employee_name
+FROM (SELECT employee_id, employee_name
+      FROM employees
+      WHERE department_id = 1) AS subquery_alias
+WHERE salary > 50000;
+
+
+SELECT *
+FROM (
+    SELECT *
+    FROM Car c
+    WHERE `Condition` LIKE '%new%'
+) AS subquery_alias
+WHERE Mileage < 500;
+
